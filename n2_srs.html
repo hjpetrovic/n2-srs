@@ -240,8 +240,8 @@ function useDataStore(user) {
       // Load from Firestore
       const uid = user.uid;
       Promise.all([
-        db.collection('users').doc(uid).collection('data').doc('progress').get(),
-        db.collection('users').doc(uid).collection('data').doc('stats').get()
+        db.collection('users').doc(uid).collection('n2-data').doc('progress').get(),
+        db.collection('users').doc(uid).collection('n2-data').doc('stats').get()
       ]).then(([pSnap, sSnap]) => {
         if (pSnap.exists) setProgress(pSnap.data().cards || {});
         else setProgress({});
@@ -282,10 +282,10 @@ function useDataStore(user) {
         setSyncing(true);
         const batch = db.batch();
         if (pendingProgress.current) {
-          batch.set(db.collection('users').doc(uid).collection('data').doc('progress'), { cards: pendingProgress.current }, { merge: true });
+          batch.set(db.collection('users').doc(uid).collection('n2-data').doc('progress'), { cards: pendingProgress.current }, { merge: true });
         }
         if (pendingStats.current) {
-          batch.set(db.collection('users').doc(uid).collection('data').doc('stats'), pendingStats.current, { merge: true });
+          batch.set(db.collection('users').doc(uid).collection('n2-data').doc('stats'), pendingStats.current, { merge: true });
         }
         batch.commit().then(() => setSyncing(false)).catch(() => setSyncing(false));
       }
@@ -317,8 +317,8 @@ function useDataStore(user) {
     setStats({ totalReviews: 0, streak: 0, lastStudyDate: null, correctCount: 0, byType: {}, recentResults: [] });
     if (user && db) {
       const uid = user.uid;
-      db.collection('users').doc(uid).collection('data').doc('progress').delete();
-      db.collection('users').doc(uid).collection('data').doc('stats').delete();
+      db.collection('users').doc(uid).collection('n2-data').doc('progress').delete();
+      db.collection('users').doc(uid).collection('n2-data').doc('stats').delete();
     } else {
       localStorage.removeItem('n2_srs_v2');
       localStorage.removeItem('n2_stats_v2');
