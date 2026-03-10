@@ -1,0 +1,17 @@
+{
+  "name": "N2 SRS - JLPT N2 Spaced Repetition",
+  "short_name": "N2 SRS",
+  "description": "Spaced repetition study app for JLPT N2 with 397 questions, 3024 vocabulary, and 135 grammar patterns",
+  "start_url": "./n2_srs.html",
+  "display": "standalone",
+  "background_color": "#100d36",
+  "theme_color": "#100d36",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23bae6fd'/><stop offset='100%25' stop-color='%23d8b4fe'/></linearGradient></defs><rect width='100' height='100' rx='20' fill='%23100d36'/><text x='50' y='68' text-anchor='middle' font-size='42' font-weight='bold' fill='url(%23g)'>N2</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
