@@ -226,7 +226,7 @@ function sm2(card, quality) {
 
 function useDataStore(user) {
   const [progress, setProgress] = useState({});
-  const [stats, setStats] = useState({ totalReviews: 0, streak: 0, lastStudyDate: null, correctCount: 0, byType: {} });
+  const [stats, setStats] = useState({ totalReviews: 0, streak: 0, lastStudyDate: null, correctCount: 0, byType: {}, recentResults: [] });
   const [loaded, setLoaded] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const saveTimer = useRef(null);
@@ -247,9 +247,9 @@ function useDataStore(user) {
         else setProgress({});
         if (sSnap.exists) {
           const s = sSnap.data();
-          setStats({ totalReviews: s.totalReviews || 0, streak: s.streak || 0, lastStudyDate: s.lastStudyDate || null, correctCount: s.correctCount || 0, byType: s.byType || {} });
+          setStats({ totalReviews: s.totalReviews || 0, streak: s.streak || 0, lastStudyDate: s.lastStudyDate || null, correctCount: s.correctCount || 0, byType: s.byType || {}, recentResults: s.recentResults || [] });
         } else {
-          setStats({ totalReviews: 0, streak: 0, lastStudyDate: null, correctCount: 0, byType: {} });
+          setStats({ totalReviews: 0, streak: 0, lastStudyDate: null, correctCount: 0, byType: {}, recentResults: [] });
         }
         setLoaded(true);
         // Update profile
@@ -267,8 +267,8 @@ function useDataStore(user) {
       try { setProgress(JSON.parse(localStorage.getItem('n2_srs_v2') || '{}')); } catch { setProgress({}); }
       try {
         const s = JSON.parse(localStorage.getItem('n2_stats_v2') || '{}');
-        setStats({ totalReviews: s.totalReviews || 0, streak: s.streak || 0, lastStudyDate: s.lastStudyDate || null, correctCount: s.correctCount || 0 });
-      } catch { setStats({ totalReviews: 0, streak: 0, lastStudyDate: null, correctCount: 0, byType: {} }); }
+        setStats({ totalReviews: s.totalReviews || 0, streak: s.streak || 0, lastStudyDate: s.lastStudyDate || null, correctCount: s.correctCount || 0, recentResults: s.recentResults || [] });
+      } catch { setStats({ totalReviews: 0, streak: 0, lastStudyDate: null, correctCount: 0, byType: {}, recentResults: [] }); }
       setLoaded(true);
     }
   }, [user]);
@@ -314,7 +314,7 @@ function useDataStore(user) {
 
   function resetAll() {
     setProgress({});
-    setStats({ totalReviews: 0, streak: 0, lastStudyDate: null, correctCount: 0, byType: {} });
+    setStats({ totalReviews: 0, streak: 0, lastStudyDate: null, correctCount: 0, byType: {}, recentResults: [] });
     if (user && db) {
       const uid = user.uid;
       db.collection('users').doc(uid).collection('data').doc('progress').delete();
@@ -521,7 +521,8 @@ function App() {
   }), [progress, grammarMcqQuestions]);
   const newGrammarMcq = useMemo(() => grammarMcqQuestions.filter(q => !progress[`q_${q.id}`]), [progress, grammarMcqQuestions]);
 
-  const accuracy = stats.totalReviews > 0 ? Math.round(stats.correctCount / stats.totalReviews * 100) : 0;
+  const recentResults = stats.recentResults || [];
+  const accuracy = recentResults.length > 0 ? Math.round(recentResults.reduce((a, b) => a + b, 0) / recentResults.length * 100) : 0;
 
   // Update streak
   useEffect(() => {
@@ -611,7 +612,7 @@ function App() {
     const updated = sm2(progress[key] || {}, isCorrect ? 2 : 0);
     const np = { ...progress, [key]: updated };
     updateProgress(np);
-    let ns = { ...stats, totalReviews: stats.totalReviews + 1, correctCount: stats.correctCount + (isCorrect ? 1 : 0) };
+    let ns = { ...stats, totalReviews: stats.totalReviews + 1, correctCount: stats.correctCount + (isCorrect ? 1 : 0), recentResults: [...(stats.recentResults || []), isCorrect ? 1 : 0].slice(-100) };
     ns = addTypeStats(ns, card.type, isCorrect);
     updateStats(ns);
     setSessionStats(s => ({ correct: s.correct + (isCorrect ? 1 : 0), total: s.total + 1 }));
@@ -645,7 +646,7 @@ function App() {
     const np = { ...progress, [key]: updated };
     updateProgress(np);
     const isCorrect = q >= 2;
-    let ns = { ...stats, totalReviews: stats.totalReviews + 1, correctCount: stats.correctCount + (isCorrect ? 1 : 0) };
+    let ns = { ...stats, totalReviews: stats.totalReviews + 1, correctCount: stats.correctCount + (isCorrect ? 1 : 0), recentResults: [...(stats.recentResults || []), isCorrect ? 1 : 0].slice(-100) };
     ns = addTypeStats(ns, 'vocab', isCorrect);
     updateStats(ns);
     setSessionStats(s => ({ correct: s.correct + (isCorrect ? 1 : 0), total: s.total + 1 }));
@@ -676,7 +677,7 @@ function App() {
     const np = { ...progress, [key]: updated };
     updateProgress(np);
     const isCorrect = q >= 2;
-    let ns = { ...stats, totalReviews: stats.totalReviews + 1, correctCount: stats.correctCount + (isCorrect ? 1 : 0) };
+    let ns = { ...stats, totalReviews: stats.totalReviews + 1, correctCount: stats.correctCount + (isCorrect ? 1 : 0), recentResults: [...(stats.recentResults || []), isCorrect ? 1 : 0].slice(-100) };
     ns = addTypeStats(ns, 'grammar_pattern', isCorrect);
     updateStats(ns);
     setSessionStats(s => ({ correct: s.correct + (isCorrect ? 1 : 0), total: s.total + 1 }));
@@ -780,7 +781,7 @@ function App() {
           <div className="stat-card"><h3>Studied</h3><div className="num num-green">{studiedCount}</div><div className="sub">of {questions.length}</div>
             <div className="progress-bar"><div className="progress-fill green" style={{width:`${(studiedCount/questions.length)*100}%`}}></div></div>
           </div>
-          <div className="stat-card"><h3>Accuracy</h3><div className="num num-amber">{accuracy}%</div><div className="sub">{stats.totalReviews} reviews</div></div>
+          <div className="stat-card"><h3>Accuracy</h3><div className="num num-amber">{accuracy}%</div><div className="sub">last {recentResults.length < 100 ? recentResults.length : 100} reviews</div></div>
         </div>
 
         <div className="card">
