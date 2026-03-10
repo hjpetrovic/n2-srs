@@ -2,3 +2,8 @@
 __pycache__/
 *.pyc
 node_modules/
+android/upload-keystore.jks
+android/key.properties
+android/.gradle/
+android/app/build/
+android/build/
