@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Stacked flashcard design, 108×108 viewport (safe zone: 18–90 on each axis).
-  Colours match the N2 SRS night sky purple palette.
-  Header strip uses a pale-blue → lavender gradient to mirror the app title.
+  "N2" gradient text icon, same technique as N1 SRS:
+  letter shapes as a clip-path, gradient rectangle fills through them.
+  Viewport 108×108, safe zone: 18–90.
+
+  N — left bar + diagonal parallelogram + right bar  (x: 24–54)
+  2 — top bar, top-right col, middle bar,
+      bottom-left col, bottom bar             (x: 57–81)
+
+  Gradient: pale-blue #bae6fd (top-left) → lavender #d8b4fe (bottom-right)
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt"
@@ -11,50 +17,30 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- Back card (offset right+down, mid purple) -->
-    <path
-        android:fillColor="#3D3890"
-        android:pathData="M42,29 L75,29 Q82,29 82,36 L82,80 Q82,87 75,87 L42,87 Q35,87 35,80 L35,36 Q35,29 42,29 Z" />
+    <group>
+        <clip-path android:pathData="
+            M24,28 L33,28 L33,80 L24,80 Z
+            M24,28 L33,28 L54,80 L45,80 Z
+            M45,28 L54,28 L54,80 L45,80 Z
+            M57,28 L81,28 L81,37 L57,37 Z
+            M72,37 L81,37 L81,55 L72,55 Z
+            M57,46 L81,46 L81,55 L57,55 Z
+            M57,55 L68,55 L68,71 L57,71 Z
+            M57,63 L81,63 L81,71 L57,71 Z
+            " />
 
-    <!-- Front card body (very light, almost white) -->
-    <path
-        android:fillColor="#F5F0FF"
-        android:pathData="M35,22 L68,22 Q75,22 75,29 L75,73 Q75,80 68,80 L35,80 Q28,80 28,73 L28,29 Q28,22 35,22 Z" />
-
-    <!-- Front card header strip with pale-blue → lavender gradient -->
-    <path
-        android:pathData="M35,22 L68,22 Q75,22 75,29 L75,41 L28,41 L28,29 Q28,22 35,22 Z">
-        <aapt:attr name="android:fillColor">
-            <gradient
-                android:startX="28"
-                android:startY="22"
-                android:endX="75"
-                android:endY="41"
-                android:type="linear">
-                <item android:offset="0" android:color="#BAE6FD" />
-                <item android:offset="1" android:color="#D8B4FE" />
-            </gradient>
-        </aapt:attr>
-    </path>
-
-    <!-- Fuchsia accent circle in header -->
-    <path
-        android:fillColor="#E879F9"
-        android:pathData="M47.5,31.5 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0" />
-
-    <!-- Content line 1 (dark purple, full width) -->
-    <path
-        android:fillColor="#1F1D52"
-        android:pathData="M36,51 L66,51 Q68,51 68,53.5 Q68,56 66,56 L36,56 Q34,56 34,53.5 Q34,51 36,51 Z" />
-
-    <!-- Content line 2 (mid purple, shorter) -->
-    <path
-        android:fillColor="#A855F7"
-        android:pathData="M36,62 L58,62 Q60,62 60,64.5 Q60,67 58,67 L36,67 Q34,67 34,64.5 Q34,62 36,62 Z" />
-
-    <!-- Content line 3 (lavender, shortest) -->
-    <path
-        android:fillColor="#C084FC"
-        android:pathData="M36,73 L50,73 Q52,73 52,75 Q52,77 50,77 L36,77 Q34,77 34,75 Q34,73 36,73 Z" />
+        <path android:pathData="M0,0 L108,0 L108,108 L0,108 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:type="linear"
+                    android:startX="24"
+                    android:startY="28"
+                    android:endX="81"
+                    android:endY="80"
+                    android:startColor="#BAE6FD"
+                    android:endColor="#D8B4FE" />
+            </aapt:attr>
+        </path>
+    </group>
 
 </vector>
